@@ -1,0 +1,13 @@
+{
+    "CurrentBalance": "Invalid",
+    "UserIncome": "Invalid",
+    "YearlyExpenses": "Invalid",
+    "UserGoals": "", 
+    "PurchaseCatagories": {
+        "Transport": 0,
+        "Food": 0,
+        "Entertainment" : 0,
+        "Misc" : 0,
+        "CustomCatagory2" : 0  
+    }
+}

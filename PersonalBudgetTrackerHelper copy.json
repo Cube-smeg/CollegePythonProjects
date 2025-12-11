@@ -1,0 +1,10 @@
+{
+    "CurrentBalance": "Invalid",
+    "PurchaseCatagories": {
+        "Transport": 0,
+        "Food": 0,
+        "Entertainment" : 0,
+        "CustomCatagory1" : 0,
+        "CustomCatagory2" : 0  
+    }
+}

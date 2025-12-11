@@ -1,0 +1,21 @@
+{
+    "accounts" : {
+        "username": "",
+        "password": ""
+        },
+
+    "animals" : {
+        "animalSpecies" : [],
+        "animalWeight" : []
+
+
+    }
+
+}
+
+
+
+
+
+
+
