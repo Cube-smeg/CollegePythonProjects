@@ -1,5 +1,6 @@
 from random import randint
-
+from random import choice
+from time import sleep
 
 PlayersTurn = True # Gives player first turn
 
@@ -54,7 +55,11 @@ class Pokemon:
         self.CritBoost = 1.5
         self.ExpBoost = 1
         #not touching defence since it can only be obtained thru gym badges which wouldnt be reset
-    
+    def ScaleCharacter(self): #mainly for the opponants character
+        self.Health = 100
+        if self.Level > 1: # if this isnt here it sets both of them to 0 from the calculation
+            self.Health = self.Health * 1.08 * (self.Level - 1)
+            self.AttackBoost = self.AttackBoost * 1.05 * (self.Level - 1)
 #Create Character Moves
 
 #Syphy 
@@ -67,7 +72,7 @@ TailWhip = {"Name": "TailWhip", "Damage": 25}
 FlowerStorm = {"Name": "Flower Storm", "Damage": 35}
 VerdantailMoves = [TailWhip, FlowerStorm]
 
-#
+#Milert
 MitlerAbsorbtion = {"Name": "Absorbtion", "DamageBoost": 1.25} # add later AttackBoost = AttackBoost + 1.25
 MitlerLightningWar = {"Name": "Lightning War", "Damage": 45}
 MitlerMoves = [MitlerAbsorbtion, MitlerLightningWar]
@@ -81,24 +86,29 @@ Mitler : Mitler, an electric type pokemon. Her stature is rather small, but she 
 """
       )
 def PlayerPokemonSelector():
-    try:
-        CharacterSelected = int(input("""Select your pokemon! 
+    CharacterFound = False
+    while CharacterFound == False:
+        try:
+            CharacterSelected = int(input("""Select your pokemon! 
 1.) Mitler
 2.) Syphy
 3.) Verdantail: """))
 
-        if CharacterSelected == 1:
-            CharacterSelected = Pokemon("Mitler", "Electric", 12, MitlerMoves)
-        elif CharacterSelected == 2:
-            CharacterSelected = Pokemon("Syphy", "Fire", 8, SyphyMoves)
-        elif CharacterSelected == 3:
-            CharacterSelected = Pokemon("Verdantail", "Grass", 5, VerdantailMoves)
-        return (CharacterSelected)
-    except ValueError:
-        print("Enter within 1-3 only")
-    except Exception as e:
-        print(f"an error has occured: {e}")
-        
+            if CharacterSelected == 1:
+                CharacterSelected = Pokemon("Mitler", "Electric", 12, MitlerMoves)
+            elif CharacterSelected == 2:
+                CharacterSelected = Pokemon("Syphy", "Fire", 8, SyphyMoves)
+            elif CharacterSelected == 3:
+                CharacterSelected = Pokemon("Verdantail", "Grass", 5, VerdantailMoves)
+            else:
+                raise(ValueError)
+            CharacterFound = True
+            return (CharacterSelected)
+        except ValueError:
+            print("Enter within 1-3 only")
+        except Exception as e:
+            print(f"an error has occured: {e}")
+            
 
     
 
@@ -117,8 +127,18 @@ def YourAttack(CharacterSelected):
         print(f"[  {CharacterSelected.Move1["Name"]} Which buffs your attack power by {CharacterSelected.Move1["DamageBoost"]} or {CharacterSelected.Move2["Name"]} which deals {CharacterSelected.Move2["Damage"]} damage  ] ")
     else:
         print(f"[  {CharacterSelected.Move1["Name"]} which deals {CharacterSelected.Move1["Damage"]}, or {CharacterSelected.Move2["Name"]} Which deals {CharacterSelected.Move2["Damage"]} Damage  ] ")
-    PlayerChoice = int(input(f"Select your attack (0 or 1): "))
-    return MoveSelection[PlayerChoice]
+    MoveFound = False
+    while MoveFound == False:
+        try:
+            PlayerChoice = int(input(f"Select your attack (0 or 1): "))
+            if PlayerChoice != 0 and PlayerChoice != 1:
+                raise(ValueError)
+            MoveFound = True
+            return MoveSelection[PlayerChoice]
+        except ValueError:
+            print("Enter within the given boundary")
+        except Exception as e:
+            print(f"An error has occured {e}")
 
 
 def OpponantCharacterSelector(CharacterSelected):
@@ -139,8 +159,7 @@ def OpponantCharacterSelector(CharacterSelected):
     return(OpponantCharacter)
 
 def OpponantAttack(OpponantCharacter):  #using randint to let the program select a random move for its character and makes the opponent level in a range around your own level (within 1 - 3 levels cant be under level 1)
-    MoveSelection = OpponantCharacter.Moves
-    MovePicked = MoveSelection[randint(0, len(MoveSelection) - 1)]
+    MovePicked = choice(OpponantCharacter.Moves)
     return MovePicked
     
 def DealingDamage(PlayerMovePicked, OpponantCharacter, CharacterSelected):       # Remember to check for crit, mult by crit boost if true, add attack boost on the start before crit check check for enemy defence and reduce by *0.xx
@@ -218,7 +237,7 @@ def PokemonBattleLost(OpponantCharacter, CharacterSelected):    # Deal with poke
     
     #Reset All Player and opponant buffs 
     CharacterSelected.ResetBuffs()
-    CharacterSelected.ResetBuffs()
+    OpponantCharacter.ResetBuffs()
     exit
 
 
@@ -309,9 +328,12 @@ def GameLoop(CharacterSelected):
         BattleLoopActive = True
         while BattleLoopActive: 
             print(f"Opponant is being created...")
+            sleep(0.3)
             #Create Opponant
             OpponantCharacter = OpponantCharacterSelector(CharacterSelected)
+            OpponantCharacter.ScaleCharacter() # Give the opponant their buffs from levels
             print(f"Opponant Created, you will be facing a level {OpponantCharacter.Level} {OpponantCharacter.Name}! Goodluck")
+            sleep(0.3)
             #Find type advantage at the START of a battle only (resets at the end maybe?)
             TypeADV(OpponantCharacter, CharacterSelected)
             #Opponants attack
@@ -322,16 +344,22 @@ def GameLoop(CharacterSelected):
                 PlayerUses = YourAttack(CharacterSelected)
                 BattleEnded = DealingDamage(PlayerUses, OpponantCharacter, CharacterSelected)
             print("Battle has ended!")
+            sleep(0.5)
             NextActionUnchosen = True
             while NextActionUnchosen == True: # i dont think 2 whiles in the same loop is a great idea but its fine 
                 NextAction = int(input("""What would you like to do next?: 
-                [1] Enter another battle
-                [2] Restart your progress with a new pokemon
-                [3] Enter a boss battle (Level 5+)"""))
+[1] Enter another battle
+[2] Restart your progress with a new pokemon
+[3] Enter a boss battle (Level 5+)"""))
 
                 if NextAction == 1:
                     print("[ Good luck on your next battle! ]")
-                    BattleLoopActive = True # not needed but helps show what this is 
+                    sleep(0.5)
+                    BattleLoopActive = True # not needed but helps show what this is
+                    CharacterSelected.ResetBuffs() 
+                    OpponantCharacter.ResetBuffs()
+                    NextActionUnchosen = False
+                
                 elif NextAction == 2:
                     print(f"You chose {CharacterSelected.Name} this time, i wonder what you will go for next..")
                     CharacterSelected.ResetStats() # added to re set stats since it somehow wasnt before?
@@ -355,10 +383,10 @@ GameLoop(CharacterSelected)
 
 
 #Current Issues
-#NextActionLoop not ending on option #1 (HP)
+#NextActionLoop not ending on option #1 (HP) - fixed
 #AttackBoost potentially giving more then previously thought (45 + 25% shouldnt equal 101 but it does and i have no idea) (MP)
-#Some potential errors involving wrong inputs (LP)
-
+#Some potential errors involving wrong inputs (LP) - fixed all of them(?)
+#players hp isnt getting correctly set sometimes during the first turn of a battle?
 
 
 
