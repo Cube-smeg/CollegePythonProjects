@@ -16,6 +16,7 @@ class Pokemon:
         self.AttackBoost = 1
         self.Defence = 1
         self.CritBoost = 1.5
+        self.Stamina = 100 
 
         self.Level = 1
         self.BaseExp = 100
@@ -60,21 +61,22 @@ class Pokemon:
         if self.Level > 1: # if this isnt here it sets both of them to 0 from the calculation
             self.Health = self.Health * 1.08 * (self.Level - 1)
             self.AttackBoost = self.AttackBoost * 1.05 * (self.Level - 1)
+            self.Stamina = self.Stamina * (1.05 * self.Level - 1) #large scale amount
 #Create Character Moves
 
 #Syphy 
-SyphStab = {"Name": "Syph Stab", "Damage": 30}
-SyphNeedle = {"Name": "Syph Needle Eye", "Damage": 25}
+SyphStab = {"Name": "Syph Stab", "Damage": 30, "Stamina": 40}
+SyphNeedle = {"Name": "Syph Needle Eye", "Damage": 25, "Stamina": 20}
 SyphyMoves = [SyphStab, SyphNeedle]
 
 #Verdantail 
-TailWhip = {"Name": "TailWhip", "Damage": 25}
-FlowerStorm = {"Name": "Flower Storm", "Damage": 35}
+TailWhip = {"Name": "TailWhip", "Damage": 25, "Stamina": 20}
+FlowerStorm = {"Name": "Flower Storm", "Damage": 35, "Stamina": 45}
 VerdantailMoves = [TailWhip, FlowerStorm]
 
 #Milert
-MitlerAbsorbtion = {"Name": "Absorbtion", "DamageBoost": 1.25} # add later AttackBoost = AttackBoost + 1.25
-MitlerLightningWar = {"Name": "Lightning War", "Damage": 45}
+MitlerAbsorbtion = {"Name": "Absorbtion", "DamageBoost": 0.25, "Stamina": 30} 
+MitlerLightningWar = {"Name": "Lightning War", "Damage": 45, "Stamina": 50}
 MitlerMoves = [MitlerAbsorbtion, MitlerLightningWar]
 
 #Select Character
@@ -122,23 +124,38 @@ def LevelScaling(CharacterSelected):
     print(f"[ Your new max HP is {CharacterSelected.Health} and you damage is boosted by {CharacterSelected.AttackBoost}! 1]")
 
 def YourAttack(CharacterSelected):
-    MoveSelection = CharacterSelected.Moves
-    if CharacterSelected.Name == "Mitler": #So it doesnt break when it cant find the damage key in mitlers first move)
+    #check what moves are usable (player needs enough stamina for it)
+    AvalibleMoves = [
+        Move
+        for Move in CharacterSelected.Moves
+        if Move["Stamina"] <= CharacterSelected.Stamina
+    ]
+    if not AvalibleMoves:
+        print(f"Your stamina was too low to find any useable moves! ") # hopefully this doesnt happen but yk
+        return None #should make this a default move later on so the program doesnt break if it does occur
+    
+    MoveSelection = AvalibleMoves 
+    #show moves
+    if CharacterSelected.Name == "Mitler":
         print(f"[  {CharacterSelected.Move1["Name"]} Which buffs your attack power by {CharacterSelected.Move1["DamageBoost"]} or {CharacterSelected.Move2["Name"]} which deals {CharacterSelected.Move2["Damage"]} damage  ] ")
     else:
-        print(f"[  {CharacterSelected.Move1["Name"]} which deals {CharacterSelected.Move1["Damage"]}, or {CharacterSelected.Move2["Name"]} Which deals {CharacterSelected.Move2["Damage"]} Damage  ] ")
+        for x,Move in enumerate(AvalibleMoves):
+            print(f"[ [{x}] {Move["Name"]}, deals {Move["Damage"]} however costs {Move["Stamina"]} stamina...] ")
+        
+
     MoveFound = False
+    #chose moves
     while MoveFound == False:
         try:
-            PlayerChoice = int(input(f"Select your attack (0 or 1): "))
-            if PlayerChoice != 0 and PlayerChoice != 1:
-                raise(ValueError)
-            MoveFound = True
-            return MoveSelection[PlayerChoice]
+            PlayerChoice = int(input(f"Select your attack:"))
+            if 0 <= PlayerChoice < len(AvalibleMoves):
+                MoveFound = True
+                return AvalibleMoves[PlayerChoice]
+            else: 
+                raise ValueError
         except ValueError:
             print("Enter within the given boundary")
-        except Exception as e:
-            print(f"An error has occured {e}")
+
 
 
 def OpponantCharacterSelector(CharacterSelected):
@@ -152,7 +169,7 @@ def OpponantCharacterSelector(CharacterSelected):
     elif OpponantCharacterChoice == 3:
         OpponantCharacter = Pokemon("Verdantail", "Grass", 5, VerdantailMoves)
     #Create a level for the opponant based on the players level
-    if CharacterSelected.Level > 3:
+    if CharacterSelected.Level > 1:
         OpponantCharacter.Level = CharacterSelected.Level - randint(1,3)
     else:
         OpponantCharacter.Level = CharacterSelected.Level
@@ -176,12 +193,14 @@ def DealingDamage(PlayerMovePicked, OpponantCharacter, CharacterSelected):      
             if randint(1, 100) <= CharacterSelected.CritChance:
                 Damage = Damage * CharacterSelected.CritBoost
                 print(f"[ Your {CharacterSelected.Name} hit a critical!, there attack will deal 50% more damage! ]")
+                print("----------------------------------------------------------")
                 
     #Time to deal the damage and give buffs for the players turn
     # PLAYER DEALING DAMAGE TO OPPONANT
         if PlayerMovePicked["Name"] == "Absorbtion":
             CharacterSelected.AttackBoost = CharacterSelected.AttackBoost + DamageBoost # Made it +25 instead of 25% so players cant inf stack it later on
-            print(f"[ {CharacterSelected.Name} Has used Absorbtion! Their attack power has increased by 25% ]")
+            print(f"[ Your {CharacterSelected.Name} Has used Absorbtion! Their attack power has increased by 25% ]")
+            print("----------------------------------------------------------")
             OpponantHealth = OpponantCharacter.Health
             PlayersTurn = False
         else:
@@ -189,11 +208,13 @@ def DealingDamage(PlayerMovePicked, OpponantCharacter, CharacterSelected):      
             OpponantHealth = OpponantHealth - Damage
         if OpponantHealth <= 0:
             print(f"[ Opponant has fallen! your attack delt {Damage} and took them out! Well done ]")
+            print("--------------------------------------------------------------------------------")
             PokemonBattleWon(OpponantCharacter, CharacterSelected)
             BattleWon = True
             return True, BattleWon
         elif PlayerMovePicked["Name"] != "Absorbtion":
-            print(f"[ {CharacterSelected.Name} delt {Damage} to the opponants {OpponantCharacter.Name}, The opponant has {OpponantHealth} health remaining! ]")
+            print(f"[ Your {CharacterSelected.Name} delt {Damage} to the opponants {OpponantCharacter.Name}, The opponant has {OpponantHealth} health remaining! ]")
+            print("----------------------------------------------------------")
             OpponantCharacter.Health = OpponantHealth
             PlayersTurn = False
 
@@ -208,12 +229,14 @@ def DealingDamage(PlayerMovePicked, OpponantCharacter, CharacterSelected):      
             if randint(1, 100) <= OpponantCharacter.CritChance:
                 Damage = Damage * OpponantCharacter.CritBoost
                 print(f"[ The opponants {OpponantCharacter.Name} landed a critical! their attack deals 50% more damage! ]")
+                print("----------------------------------------------------------")
     #Time to deal the damage for the opponants attack and display buffs
     # OPPONANT DEALING DAMAGE TO PLAYER
 
         if MovePicked["Name"] == "Absorbtion":
             OpponantCharacter.AttackBoost = OpponantCharacter.AttackBoost + DamageBoost
-            print(f"[ {OpponantCharacter.Name} Has used Absorbtion! Their attack power has increased by 25% ]")
+            print(f"[ Opponant {OpponantCharacter.Name} Has used Absorbtion! Their attack power has increased by 25% ]")
+            print("----------------------------------------------------------")
             PlayerHealth = CharacterSelected.Health
             PlayersTurn = True
             return False
@@ -222,13 +245,16 @@ def DealingDamage(PlayerMovePicked, OpponantCharacter, CharacterSelected):      
             PlayerHealth = PlayerHealth - (Damage * CharacterSelected.Defence) # Damage taken is damage multiplied by defence (which is normally 1) defence needs to be <1 to lower damage
         if PlayerHealth <= 0:
             print(f"[ Your pokemon has fallen! their attack delt {Damage} and took you out! Unfortunate ]")
+            print("----------------------------------------------------------")
             PokemonBattleLost(OpponantCharacter, CharacterSelected)
             BattleLost = True
             return True, BattleLost
         elif MovePicked["Name"] != "Absorbtion":
-            print(f"[ {OpponantCharacter.Name} delt {Damage} to your pokemon! {CharacterSelected.Name}, has {PlayerHealth} health remaining! ]")
+            print(f"[ Opponant {OpponantCharacter.Name} delt {Damage} to your pokemon! {CharacterSelected.Name}, has {PlayerHealth} health remaining! ]")
+            print("----------------------------------------------------------")
             CharacterSelected.Health = PlayerHealth
             PlayersTurn = True
+
             return False
             
             
@@ -314,6 +340,7 @@ def GymFight(CharacterSelected, Element):
         BattleEnded, BattleResult = DealingDamage(PlayerUses, BossEntity, CharacterSelected) 
         #Copied from battle loop) 
     if BattleResult == True:
+        CharacterSelected.Winstreak = CharacterSelected.Winsteak + 1
         if Element == 1:
             CharacterSelected.GymBadge1 = CharacterSelected.GymBadge1 + 1
             CharacterSelected.GymBadgeRewards()
@@ -394,10 +421,15 @@ GameLoop(CharacterSelected)
 
 #Current Issues
 #NextActionLoop not ending on option #1 (HP) - fixed
-#AttackBoost potentially giving more then previously thought (45 + 25% shouldnt equal 101 but it does and i have no idea) (MP)
+#AttackBoost potentially giving more then previously thought (45 + 25% shouldnt equal 101 but it does and i have no idea) (MP) - fixed, the damage boost was equaling to 2.25x instead of 1.25x
 #Some potential errors involving wrong inputs (LP) - fixed all of them(?)
 #players hp isnt getting correctly set sometimes during the first turn of a battle?
 
+#TODO
+#Stamina to moves 
+#new affects from moves
+#move "speeds" whoever uses the move with the highest speed has a chance to attack before the player
+#more characters with new elements
 
 
 
