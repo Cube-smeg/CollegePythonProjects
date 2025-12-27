@@ -10,7 +10,7 @@ purchaseCatagories =[
 "Entertainment"  ,
 "Misc" ,
 "CustomCatagory2"   
-   ]
+]
 
 #VERY IMPORTANT FUNCTION TO UPDATE VALUES IN PERSONALBUDGETTRACKERHELPER.JSON (Used so values are saved and the program is somewhat useful)
 def ChangeValue(fileName, key, newValue):

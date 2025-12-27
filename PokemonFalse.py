@@ -27,6 +27,7 @@ class Pokemon:
         self.GymBadge1 = 0
         self.GymBadge2 = 0
         self.GymBadge3 = 0
+        self.Winstreak = 0
 
     def UpdateExpReq(self): 
         self.ExpReq = int(self.BaseExp * self.Mult * (self.Level - 1))
@@ -53,9 +54,8 @@ class Pokemon:
     def ResetBuffs(self):
         self.AttackBoost = 1
         self.CritBoost = 1.5
-        self.ExpBoost = 1
         #not touching defence since it can only be obtained thru gym badges which wouldnt be reset
-    def ScaleCharacter(self): #mainly for the opponants character
+    def ScaleCharacter(self): #to fix some health bugs where it isnt being properly set after a fight
         self.Health = 100
         if self.Level > 1: # if this isnt here it sets both of them to 0 from the calculation
             self.Health = self.Health * 1.08 * (self.Level - 1)
@@ -117,7 +117,7 @@ def LevelScaling(CharacterSelected):
     CharacterSelected.Level = CharacterSelected.Level + 1
     CharacterSelected.Health = 100 #re setting the max hp to 100 after the fight ends
     CharacterSelected.Health = CharacterSelected.Health * 1.08 * (CharacterSelected.Level - 1)
-    CharacterSelected.AttackBoost = CharacterSelected.AttackBoost * 1.05 * (CharacterSelected.Level - 1)
+    CharacterSelected.AttackBoost = CharacterSelected.AttackBoost * 1.05 
     print(f"[ Your pokemon leveled up! {CharacterSelected.Name}s level is now {CharacterSelected.Level} ]")
     print(f"[ Your new max HP is {CharacterSelected.Health} and you damage is boosted by {CharacterSelected.AttackBoost}! 1]")
 
@@ -216,6 +216,7 @@ def DealingDamage(PlayerMovePicked, OpponantCharacter, CharacterSelected):      
             print(f"[ {OpponantCharacter.Name} Has used Absorbtion! Their attack power has increased by 25% ]")
             PlayerHealth = CharacterSelected.Health
             PlayersTurn = True
+            return False
         else:
             PlayerHealth = CharacterSelected.Health
             PlayerHealth = PlayerHealth - (Damage * CharacterSelected.Defence) # Damage taken is damage multiplied by defence (which is normally 1) defence needs to be <1 to lower damage
@@ -233,15 +234,23 @@ def DealingDamage(PlayerMovePicked, OpponantCharacter, CharacterSelected):      
             
 
 def PokemonBattleLost(OpponantCharacter, CharacterSelected):    # Deal with pokemon feinting, a slight loss of exp and a lil death screen
-    print("Your pokemon feinted in battle!")
+    print(f"""
+[ Your pokemon feinted in battle! ]
+You made it {CharacterSelected.Winstreak} games in a row!
+You lost {CharacterSelected.Exp * 1.8 - CharacterSelected.Exp}  exp...
+""")
     
     #Reset All Player and opponant buffs 
     CharacterSelected.ResetBuffs()
     OpponantCharacter.ResetBuffs()
+    CharacterSelected.ScaleCharacter() # set hp to max
+    CharacterSelected.Winstreak = 0
+    CharacterSelected.Exp = CharacterSelected.Exp * 1.80 - CharacterSelected.Exp # losing 20% of their total exp
     exit
 
 
 def PokemonBattleWon(OpponantCharacter, CharacterSelected):          # Deals with exp giving, checking for a level up and giving a win screen to move on to the next fight
+    CharacterSelected.Winstreak = CharacterSelected.Winstreak + 1
     ExpRewarded = 30 * OpponantCharacter.Level 
     ExpRewarded = ExpRewarded * CharacterSelected.ExpBoost
     print(f"Your pokemon gained {ExpRewarded} exp!")
@@ -261,6 +270,7 @@ def PokemonBattleWon(OpponantCharacter, CharacterSelected):          # Deals wit
         CharacterSelected.UpdateExpReq()
     else:
         print(f"Your pokemon has {CharacterSelected.Exp} exp, you need {CharacterSelected.ExpReq} to move on to the next level: {CharacterSelected.Level + 1}" )
+        CharacterSelected.ScaleCharacter() # set hp and attack boost since they didnt level up it doesnt get set from that function
 
 
 #Deals with type advantage : Fire > Grass, Water > Fire, Grass > NA, Electric > Grass (idk), 35% dmg boost if this is true
