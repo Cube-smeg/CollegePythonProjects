@@ -125,6 +125,7 @@ def LevelScaling(CharacterSelected):
 
 def YourAttack(CharacterSelected):
     #check what moves are usable (player needs enough stamina for it)
+    # ai MIGHT of been used for the avalible moves but who knows....
     AvalibleMoves = [
         Move
         for Move in CharacterSelected.Moves
@@ -133,8 +134,7 @@ def YourAttack(CharacterSelected):
     if not AvalibleMoves:
         print(f"Your stamina was too low to find any useable moves! ") # hopefully this doesnt happen but yk
         return None #should make this a default move later on so the program doesnt break if it does occur
-    
-    MoveSelection = AvalibleMoves 
+     
     #show moves
     if CharacterSelected.Name == "Mitler":
         print(f"[  {CharacterSelected.Move1["Name"]} Which buffs your attack power by {CharacterSelected.Move1["DamageBoost"]} or {CharacterSelected.Move2["Name"]} which deals {CharacterSelected.Move2["Damage"]} damage  ] ")
@@ -175,7 +175,7 @@ def OpponantCharacterSelector(CharacterSelected):
         OpponantCharacter.Level = CharacterSelected.Level
     return(OpponantCharacter)
 
-def OpponantAttack(OpponantCharacter):  #using randint to let the program select a random move for its character and makes the opponent level in a range around your own level (within 1 - 3 levels cant be under level 1)
+def OpponantAttack(OpponantCharacter):  
     MovePicked = choice(OpponantCharacter.Moves)
     return MovePicked
     
@@ -425,8 +425,8 @@ GameLoop(CharacterSelected)
 #Some potential errors involving wrong inputs (LP) - fixed all of them(?)
 #players hp isnt getting correctly set sometimes during the first turn of a battle?
 
-#TODO
-#Stamina to moves 
+#TO DO
+#Stamina to moves - DONE SHOULD FULLY WORK ON ALL APART FROM MITLERT
 #new affects from moves
 #move "speeds" whoever uses the move with the highest speed has a chance to attack before the player
 #more characters with new elements

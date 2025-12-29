@@ -1,21 +1,18 @@
 {
-    "accounts" : {
-        "username": "",
-        "password": ""
-        },
+    "accounts": {
+        "username": "password",
+        "Smeg": "Cube"
+    },
 
-    "animals" : {
-        "animalSpecies" : [],
-        "animalWeight" : []
+    "animals": {
+        "animalsSpecies": ["Lion", "Elephant", "Giraffe", "Zebra", "Penguin", "Panda", "Flamingo"],
+        "animalsAvalible": [""],
+        "animalsUnvalible": [""]
+        
+    },
+    "bookings": {
+        "month": "day"
 
 
     }
-
 }
-
-
-
-
-
-
-
