@@ -42,6 +42,7 @@ class Pokemon:
         self.AttackBoost = 1
         self.Defence = 1
         self.CritBoost = 1.5
+        self.Stamina = 100
 
         self.Level = 1
         self.BaseExp = 100
@@ -61,7 +62,7 @@ class Pokemon:
         if self.Level > 1: # if this isnt here it sets both of them to 0 from the calculation
             self.Health = self.Health * 1.08 * (self.Level - 1)
             self.AttackBoost = self.AttackBoost * 1.05 * (self.Level - 1)
-            self.Stamina = self.Stamina * (1.05 * self.Level - 1) #large scale amount
+            self.Stamina = self.Stamina * 1.2 * (self.Level - 1) #large scale amount
 #Create Character Moves
 
 #Syphy 
@@ -426,7 +427,7 @@ GameLoop(CharacterSelected)
 #players hp isnt getting correctly set sometimes during the first turn of a battle?
 
 #TO DO
-#Stamina to moves - DONE SHOULD FULLY WORK ON ALL APART FROM MITLERT
+#Stamina to moves - DONE SHOULD FULLY WORK ON ALL APART FROM MITLERT (NEVER MIND I FORGOT THE ENTIRE FUNCTIONALITY OF REMOVING STAMINA AFTER USING A MOVE?? HOW DO I MISS THAT)
 #new affects from moves
 #move "speeds" whoever uses the move with the highest speed has a chance to attack before the player
 #more characters with new elements
