@@ -3,6 +3,10 @@
         "username": "password",
         "Smeg": "Cube"
     },
+    
+    "adminAccounts": {
+        "admin": "admin123"
+    },
 
     "animals": {
         "animalsSpecies": ["Lion", "Elephant", "Giraffe", "Zebra", "Penguin", "Panda", "Flamingo"],

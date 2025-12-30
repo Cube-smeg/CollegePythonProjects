@@ -1,17 +1,17 @@
 from turtle import *
 
 
-
+turtle = "turtle"
 
 def moveright():
-    syphy.right(90)
+    turtle.right(90)
 def moveleft():
-    syphy.left(90)
+    turtle.left(90)
 def moveforward():
-    syphy.forward(40)
+    turtle.forward(40)
 def movebackward():
-    syphy.right(180)
-    syphy.forward(40)
+    turtle.right(180)
+    turtle.forward(40)
 
 forward(90)
 
