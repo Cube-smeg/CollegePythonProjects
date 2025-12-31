@@ -1,5 +1,5 @@
 import json as jason
-import datetime 
+from datetime import datetime 
 
 #Enter Login and password
 #Email
@@ -28,7 +28,7 @@ def login():
             newPasswordAcc = input("Enter the password for your account: ")
             if newUserAcc in data.get("accounts", {}):
                 print("Username taken, please try again.")
-            elif any(newEmailAcc == info.get("email") for info in data.get("accounts", {}).values()):
+            elif newEmailAcc in data.get("accounts"):
                 print("Email is already in use, please try again.")
         except ValueError:
             print("please try again")
@@ -46,19 +46,20 @@ def login():
         try:
             existingUserAcc = input("Enter your username: ")
             existingPassAcc = input("Enter your password: ")
-            if existingUserAcc in data.get("accounts", {}):  # Username inside json file
-                if data["accounts"][existingUserAcc] == existingPassAcc:  # password inside json file
+            if existingUserAcc in data.get("accounts", {}):
+                if data["accounts"][existingUserAcc] == existingPassAcc:
                     print("Access Granted")
                     return "User", existingUserAcc
-                elif data["adminAccounts"][existingUserAcc] == existingPassAcc:
-                    print("Access granted, Admin permisions enabled.")
-                    return "Admin", existingUserAcc
                 else:
-                    print("Password did not match username.")
+                     print("Password did not match username.")
+            elif existingUserAcc in data.get("adminAccounts", {}):
+                if data["adminAccounts"][existingUserAcc] == existingPassAcc:
+                    print("Access granted, Admin permissions enabled.")
+                    return "Admin", existingUserAcc
             else:
-                print("Username could not be found.")
-        except:
-            print("Please try again.")
+                print("Password did not match username.")
+        except ValueError:
+            print("please try again.")
 
 def updateAnimals(whatToUpdate): #[4], [3]
     if whatToUpdate == "avalibility":
@@ -68,43 +69,59 @@ def updateAnimals(whatToUpdate): #[4], [3]
     
       
 
-def createBooking(username): #[1]
-    with open(fileZoo, "r", "utf-8") as file:
-        bookings = jason.load(file)
-    unavalibleDates = bookings["bookings"][*]
-    while True: # finding a valid date for booking
-        bookingDates = int(input("Please enter when you wish to visit [DD/MM/YYYY]: "))
-        try:
-            validDate = datetime.strptime(bookingDates("%d/%m/%Y"))
-            if validDate in unavalibleDates:
-                raise ValueError("Day has already been taken, please select another time")
-            
-            print("Date validated. your booking has been created for: ", validDate.strftime("%d/%m/%Y"))
-            break
-        except: ValueError
+def createBooking(username, action): #[1] #NEEDS TO ADD A WAY TO REMOVE A BOOKING
+    if action == 1:
+        with open(fileZoo, "r", encoding="utf-8") as file:
+            bookings = jason.load(file)
+        unavalibleDates = bookings["bookings"]
+        while True: # finding a valid date for booking
+            bookingDates = int(input("Please enter when you wish to visit [DD/MM/YYYY]: "))
+            try:
+                validDate = datetime.strptime(bookingDates("%d/%m/%Y"))
+                if validDate in unavalibleDates:
+                    raise ValueError("Day has already been taken, please select another time")
+                
+                print("Date validated. your booking has been created for: ", validDate.strftime("%d/%m/%Y"))
+                break
+            except ValueError:
+                print("value error or smth")
+                
 
-    finalDate = ["bookings"][username] = validDate.date().isoformat()
-    with open(fileZoo, "w", "utf-8") as file:
-        jason.dump(finalDate, file, indent=4 )
+        finalDate = ["bookings"][username] = validDate.date().isoformat()
+        with open(fileZoo, "w", encoding="utf-8") as file:
+            jason.dump(finalDate, file, indent=4 )
+    else:
+        #REMOVE BOOKING OPTION 
+        pass
 
 def viewAnimals(): #[2]
-    pass
+    with open(fileZoo, "r", encoding="utf-8") as file:
+        data = jason.load(file)
+    avalibleAnimals = data["animals"]["animalsAvalible"]
+    print(f"Currently the avalible animals are: {avalibleAnimals}.")
+    checkUnavalible = int(input("If you wish to see what animals are currently unavalible press 1: "))
+    if checkUnavalible == 1:
+        unavalibleAnimals = data["animals"]["animalsUnavalible"]
+        if unavalibleAnimals(len) < 1:
+            print("Currently there are no animals unavalible!")
+        else:
+            print(f"Currently unavalible animals are {unavalibleAnimals}")
 
 def createAdmin(): #[5]
-    with open(fileZoo, "r", "utf-8") as file:
+    with open(fileZoo, "r", encoding="utf-8") as file:
         data = jason.load(file)
     pass
     try:
         adminUsername = input("Enter the username for the new account: ")
-        if adminUsername in data.get["adminAccounts"] or adminUsername in data.get["accounts"]:
+        if adminUsername in data.get("adminAccounts", {}) or adminUsername in data.get("accounts", {}):
             raise ValueError("Username has already been taken, please try again")
         adminPassword = input("Enter the password for the new account: ")
-    except ValueError:
-
-        accountInformation = ["adminAccounts"][adminUsername] = [adminPassword]
-        
-        with open(fileZoo, "w", "utf-8") as file:
-            jason.dump(accountInformation, file, indent=4)
+        data["adminAccounts"][adminUsername] = adminPassword
+        with open(fileZoo, "w", encoding="utf-8") as file:
+            jason.dump(data, file, indent=4)
+        print("account should have been created.")
+    except ValueError as e:
+        print(e)
 
 
 
@@ -114,18 +131,18 @@ Access, username = login()
 while True:
     if Access == "User":
         action = int(input("""
-    [                      DISPLAY                      ]
-        [1] Create a booking
-        [2] View avalible animals
-
+[                      DISPLAY                      ]
+        [1] Create or remove a booking
+        [2] View currently avalible animals
+        
 
     """))
         
     elif Access == "Admin":
         action = int(input("""
-    [                      DISPLAY                      ]
-        [1] Create a booking
-        [2] View avalible animals
+[                      DISPLAY                      ]
+        [1] Create a or remove a booking
+        [2] View currently avalible animals
         [3] Update animal avaliblility
         [4] Update animal descriptions 
         [5] Create new admin account
@@ -133,12 +150,16 @@ while True:
     """))
 
     if action == 1:
-        createBooking(username)
+        remove = int(input("[ Press 1 to create booking, press 2 to remove a booking.]"))
+        if remove == 1:
+            createBooking(username, remove) # create
+        elif remove == 2:
+            createBooking(username, remove) # remove
         UserLeave = input("Press E to exit, if not enter Y to carry out a new action").upper()
         if UserLeave == "E":
             break
     elif action == 2:
-        pass
+        viewAnimals()
     elif action == 3:
         updateAnimals("avalibility")
         UserLeave = input("Press E to exit, if not enter Y to carry out a new action").upper()
@@ -166,3 +187,13 @@ while True:
 # Create a table for all animal species in zoo
 # Each species will have a generalised overview of the animal aswell as dates that animal can be visitted 
 # create a bookings system, check what dates are good, which are taken
+
+#Working:
+#create admin acc
+#view avalible animals
+#create booking
+
+#not working:
+#remove account
+#view unavalible animals
+#remove booking
