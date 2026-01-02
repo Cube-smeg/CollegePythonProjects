@@ -1,7 +1,6 @@
 {
     "accounts": {
         "username": "password",
-        "Smeg": "Cube",
         "cube": "newaccount"
     },
     "adminAccounts": {
@@ -9,20 +8,25 @@
         "adminaccount": "adminpassword"
     },
     "animals": {
-        "animalsSpecies": [
-            "Lion",
+        "animalsSpecies": {
+            "Lion": "New description Lion",
+            "Elephant": "The largest land animal, recognized for its intelligence, memory, and long trunk.",
+            "Giraffe": "The tallest land animal, using its long neck to reach leaves high in trees.",
+            "Zebra": "A horse-like animal with distinctive black-and-white stripes used for camouflage.",
+            "Penguin": "A flightless bird adapted for swimming, living mainly in cold southern regions.",
+            "Panda": "A gentle bear known for its black-and-white fur and bamboo-based diet.",
+            "Flamingo": "A tall pink bird that stands on one leg and feeds in shallow water."
+        },
+        "animalsAvalible": [
             "Elephant",
-            "Giraffe",
             "Zebra",
             "Penguin",
             "Panda",
             "Flamingo"
         ],
-        "animalsAvalible": [
-            ""
-        ],
         "animalsUnavalible": [
-            ""
+            "Lion",
+            "Giraffe"
         ]
     },
     "bookings": {

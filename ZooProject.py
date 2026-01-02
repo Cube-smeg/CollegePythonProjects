@@ -63,10 +63,48 @@ def login():
 
 def updateAnimals(whatToUpdate): #[4], [3]
     if whatToUpdate == "avalibility":
-        pass
+        with open(fileZoo, "r", encoding="utf-8") as file:
+            data = jason.load(file)
+
+        avalibleAnimals = data["animals"]["animalsAvalible"]
+        unavalibleAnimals = data["animals"]["animalsUnavalible"]
+        print(f"Currently avalible : {avalibleAnimals}")
+        print(f"Currently unavalible : {unavalibleAnimals}")
+
+        animalToMove = input("Enter the name of the animal you wish to move: ").title()
+        if animalToMove in avalibleAnimals:
+            avalibleAnimals.remove(animalToMove)
+            unavalibleAnimals.append(animalToMove)
+            print(f"{animalToMove} has been placed into unavalible.")
+            with open(fileZoo, "w", encoding="utf-8") as file:
+                jason.dump(data, file, indent=4)
+
+        elif animalToMove in unavalibleAnimals:
+            unavalibleAnimals.remove(animalToMove)
+            avalibleAnimals.append(animalToMove)
+            print(f"{animalToMove} has been placed into avalible.")
+            with open(fileZoo, "w", encoding="utf-8") as file:
+                jason.dump(data, file, indent=4)
+
     elif whatToUpdate == "descriptions":
-        pass
-    
+        with open(fileZoo, "r", encoding="utf-8") as file:
+            data = jason.load(file)
+
+        animalsDescriptions = data["animals"]["animalsSpecies"]
+        print(f"""Currently stored are: 
+{animalsDescriptions}
+ """)
+        
+        animalToUpdate = input("Which animal you like to update?: ").title()
+        specificAnimalDescription = data["animals"]["animalsSpecies"][animalToUpdate]
+
+        print(f"You are editing {animalToUpdate}, currently their description is: {specificAnimalDescription}")
+        newDescription = input("Enter the new description: ")
+        data["animals"]["animalsSpecies"][animalToUpdate] = newDescription
+
+        with open(fileZoo, "w", encoding="utf-8") as file:
+            jason.dump(data, file, indent=4)    
+        print(f"{animalToUpdate}s description has been updated: {newDescription} ")
       
 
 def createBooking(username, action): #[1] #NEEDS TO ADD A WAY TO REMOVE A BOOKING
@@ -199,7 +237,7 @@ while True:
         if UserLeave == "E":
             break
     elif action == 4:
-        updateAnimals("description")
+        updateAnimals("descriptions")
         UserLeave = input("Press E to exit, if not enter Y to carry out a new action").upper()
         if UserLeave == "E":
             break
@@ -232,7 +270,8 @@ while True:
 #view unavalible animals
 #remove account 
 #remove booking
+#animals function [3 and 4]
 
 #not working:
-#update animals function [3 and 4]
+
 
