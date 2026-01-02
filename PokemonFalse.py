@@ -424,7 +424,7 @@ GameLoop(CharacterSelected)
 #NextActionLoop not ending on option #1 (HP) - fixed
 #AttackBoost potentially giving more then previously thought (45 + 25% shouldnt equal 101 but it does and i have no idea) (MP) - fixed, the damage boost was equaling to 2.25x instead of 1.25x
 #Some potential errors involving wrong inputs (LP) - fixed all of them(?)
-#players hp isnt getting correctly set sometimes during the first turn of a battle?
+#players hp isnt getting correctly set sometimes during the first turn of a battle? - fixed
 
 #TO DO
 #Stamina to moves - DONE SHOULD FULLY WORK ON ALL APART FROM MITLERT (NEVER MIND I FORGOT THE ENTIRE FUNCTIONALITY OF REMOVING STAMINA AFTER USING A MOVE?? HOW DO I MISS THAT)
