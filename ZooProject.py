@@ -92,7 +92,22 @@ def createBooking(username, action): #[1] #NEEDS TO ADD A WAY TO REMOVE A BOOKIN
             jason.dump(finalDate, file, indent=4 )
     else:
         #REMOVE BOOKING OPTION 
-        pass
+        with open(fileZoo, "w", encoding="utf-8") as file:
+            data = jason.load(file)
+        while True:
+            bookingToRemove = input("Enter the username of the booking to remove.")
+            if bookingToRemove in data["bookings"]:
+                dateToBooking = input("Enter the date to confirm.")
+                if data["bookings"][bookingToRemove] == dateToBooking:
+                    del data[bookingToRemove]
+                    print(f"Remove booking: {bookingToRemove} with the date {dateToBooking}.")
+                    with open(fileZoo, "w", encoding="utf-8") as file:
+                        jason.dump(data, file, indent=4)
+                    break
+                else:
+                    print("The date was incorrect. please try again")
+            else:
+                print("Booking couldnt be found. please try again")
 
 def viewAnimals(): #[2]
     with open(fileZoo, "r", encoding="utf-8") as file:
@@ -102,27 +117,45 @@ def viewAnimals(): #[2]
     checkUnavalible = int(input("If you wish to see what animals are currently unavalible press 1: "))
     if checkUnavalible == 1:
         unavalibleAnimals = data["animals"]["animalsUnavalible"]
-        if unavalibleAnimals(len) < 1:
+        if len(unavalibleAnimals) == 1:
             print("Currently there are no animals unavalible!")
         else:
             print(f"Currently unavalible animals are {unavalibleAnimals}")
 
-def createAdmin(): #[5]
-    with open(fileZoo, "r", encoding="utf-8") as file:
-        data = jason.load(file)
-    pass
-    try:
-        adminUsername = input("Enter the username for the new account: ")
-        if adminUsername in data.get("adminAccounts", {}) or adminUsername in data.get("accounts", {}):
-            raise ValueError("Username has already been taken, please try again")
-        adminPassword = input("Enter the password for the new account: ")
-        data["adminAccounts"][adminUsername] = adminPassword
-        with open(fileZoo, "w", encoding="utf-8") as file:
-            jason.dump(data, file, indent=4)
-        print("account should have been created.")
-    except ValueError as e:
-        print(e)
-
+def createAdmin(remove): #[5]
+    if remove == False:
+        with open(fileZoo, "r", encoding="utf-8") as file:
+            data = jason.load(file)
+        pass
+        try:
+            adminUsername = input("Enter the username for the new account: ")
+            if adminUsername in data.get("adminAccounts", {}) or adminUsername in data.get("accounts", {}):
+                raise ValueError("Username has already been taken, please try again")
+            adminPassword = input("Enter the password for the new account: ")
+            data["adminAccounts"][adminUsername] = adminPassword
+            with open(fileZoo, "w", encoding="utf-8") as file:
+                jason.dump(data, file, indent=4)
+            print("account should have been created.")
+        except ValueError as e:
+            print(e)
+    else:
+        with open(fileZoo, "r", encoding="utf-8") as file:
+            data = jason.load(file)
+        while True:
+            accountToRemove = input("Enter the username of the account to remove.")
+            if accountToRemove in data["adminAccounts"]:
+                passwordToAccount = input("Enter the password to confirm.")
+                if data["adminAccounts"][accountToRemove] == passwordToAccount:
+                    del data[accountToRemove]
+                    print(f"Remove username: {accountToRemove} with the password {passwordToAccount}.")
+                    with open(fileZoo, "w", encoding="utf-8") as file:
+                        jason.dump(data, file, indent=4)
+                    break
+                else:
+                    print("Password was incorrect. please try again")
+            else:
+                print("Username could not be found. please try again")
+            
 
 
 # Run the login function
@@ -145,7 +178,7 @@ while True:
         [2] View currently avalible animals
         [3] Update animal avaliblility
         [4] Update animal descriptions 
-        [5] Create new admin account
+        [5] Create or remove admin account
 
     """))
 
@@ -171,7 +204,11 @@ while True:
         if UserLeave == "E":
             break
     elif action == 5:
-        createAdmin()
+        remove = int(input("[ Press 1 to create booking, press 2 to remove a booking.]"))
+        if remove == 1:
+            createAdmin(remove=True) #remove
+        elif remove == 2:
+            createAdmin(remove=False) #create
         UserLeave = input("Press E to exit, if not enter Y to carry out a new action").upper()
         if UserLeave == "E":
             break
@@ -192,8 +229,10 @@ while True:
 #create admin acc
 #view avalible animals
 #create booking
+#view unavalible animals
+#remove account 
+#remove booking
 
 #not working:
-#remove account
-#view unavalible animals
-#remove booking
+#update animals function [3 and 4]
+
