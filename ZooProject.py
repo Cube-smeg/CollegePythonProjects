@@ -70,23 +70,27 @@ def updateAnimals(whatToUpdate): #[4], [3]
         unavalibleAnimals = data["animals"]["animalsUnavalible"]
         print(f"Currently avalible : {avalibleAnimals}")
         print(f"Currently unavalible : {unavalibleAnimals}")
+        while True:
+            animalToMove = input("Enter the name of the animal you wish to move: ").title()
+            if animalToMove in avalibleAnimals:
+                avalibleAnimals.remove(animalToMove)
+                unavalibleAnimals.append(animalToMove)
+                print(f"{animalToMove} has been placed into unavalible.")
+                with open(fileZoo, "w", encoding="utf-8") as file:
+                    jason.dump(data, file, indent=4)
+                    break
 
-        animalToMove = input("Enter the name of the animal you wish to move: ").title()
-        if animalToMove in avalibleAnimals:
-            avalibleAnimals.remove(animalToMove)
-            unavalibleAnimals.append(animalToMove)
-            print(f"{animalToMove} has been placed into unavalible.")
-            with open(fileZoo, "w", encoding="utf-8") as file:
-                jason.dump(data, file, indent=4)
-
-        elif animalToMove in unavalibleAnimals:
-            unavalibleAnimals.remove(animalToMove)
-            avalibleAnimals.append(animalToMove)
-            print(f"{animalToMove} has been placed into avalible.")
-            with open(fileZoo, "w", encoding="utf-8") as file:
-                jason.dump(data, file, indent=4)
-
+            elif animalToMove in unavalibleAnimals:
+                unavalibleAnimals.remove(animalToMove)
+                avalibleAnimals.append(animalToMove)
+                print(f"{animalToMove} has been placed into avalible.")
+                with open(fileZoo, "w", encoding="utf-8") as file:
+                    jason.dump(data, file, indent=4)
+                    break
+            else:
+                print("Animal could not be found. please ensure you enter the name correctly.")
     elif whatToUpdate == "descriptions":
+
         with open(fileZoo, "r", encoding="utf-8") as file:
             data = jason.load(file)
 
@@ -94,18 +98,21 @@ def updateAnimals(whatToUpdate): #[4], [3]
         print(f"""Currently stored are: 
 {animalsDescriptions}
  """)
-        
-        animalToUpdate = input("Which animal you like to update?: ").title()
-        specificAnimalDescription = data["animals"]["animalsSpecies"][animalToUpdate]
+        while True:
+            animalToUpdate = input("Which animal you like to update?: ").title()
+            if animalToUpdate not in animalsDescriptions:
+                print("Animal could not be found. please try again")
+            else:
+                specificAnimalDescription = data["animals"]["animalsSpecies"][animalToUpdate]
 
-        print(f"You are editing {animalToUpdate}, currently their description is: {specificAnimalDescription}")
-        newDescription = input("Enter the new description: ")
-        data["animals"]["animalsSpecies"][animalToUpdate] = newDescription
+                print(f"You are editing {animalToUpdate}, currently their description is: {specificAnimalDescription}")
+                newDescription = input("Enter the new description: ")
+                data["animals"]["animalsSpecies"][animalToUpdate] = newDescription
 
-        with open(fileZoo, "w", encoding="utf-8") as file:
-            jason.dump(data, file, indent=4)    
-        print(f"{animalToUpdate}s description has been updated: {newDescription} ")
-      
+                with open(fileZoo, "w", encoding="utf-8") as file:
+                    jason.dump(data, file, indent=4)    
+                print(f"{animalToUpdate}s description has been updated: {newDescription} ")
+                break
 
 def createBooking(username, action): #[1] #NEEDS TO ADD A WAY TO REMOVE A BOOKING
     if action == 1:
