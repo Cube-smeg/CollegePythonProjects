@@ -41,7 +41,7 @@ Songs_Genres = {
 }
 
 def CreateQuestion():
-    global Score  # Use the global Score variable
+    global Score  
 
     # --- Select the correct genre, song, and artist ---
     CorrectGenre = random.choice(list(Songs_Genres.keys()))

@@ -40,7 +40,7 @@ def login():
             with open(fileZoo, "w", encoding="utf-8") as file:
                 jason.dump(data, file, indent=4)
                 print("Account created!, Access Granted.")
-                return True, newUserAcc
+                return "User", newUserAcc
 
     else:
         try:
@@ -130,29 +130,30 @@ def createBooking(username, action): #[1] #NEEDS TO ADD A WAY TO REMOVE A BOOKIN
                 break
             except ValueError:
                 print("value error or smth")
-                
+            
 
         finalDate = ["bookings"][username] = validDate.date().isoformat()
         with open(fileZoo, "w", encoding="utf-8") as file:
             jason.dump(finalDate, file, indent=4 )
     else:
-        #REMOVE BOOKING OPTION 
-        with open(fileZoo, "w", encoding="utf-8") as file:
+        # REMOVE BOOKING OPTION
+        with open(fileZoo, "r", encoding="utf-8") as file:
             data = jason.load(file)
+
         while True:
-            bookingToRemove = input("Enter the username of the booking to remove.")
+            bookingToRemove = input("Enter the username of the booking to remove: ")
             if bookingToRemove in data["bookings"]:
-                dateToBooking = input("Enter the date to confirm.")
+                dateToBooking = input("Enter the date to confirm: ")
                 if data["bookings"][bookingToRemove] == dateToBooking:
-                    del data[bookingToRemove]
-                    print(f"Remove booking: {bookingToRemove} with the date {dateToBooking}.")
+                    del data["bookings"][bookingToRemove]
+                    print(f"Removed booking: {bookingToRemove} with the date {dateToBooking}.")
                     with open(fileZoo, "w", encoding="utf-8") as file:
                         jason.dump(data, file, indent=4)
                     break
                 else:
-                    print("The date was incorrect. please try again")
+                    print("The date was incorrect. Please try again.")
             else:
-                print("Booking couldnt be found. please try again")
+                print("Booking couldn't be found. Please try again.")
 
 def viewAnimals(): #[2]
     with open(fileZoo, "r", encoding="utf-8") as file:
@@ -168,7 +169,7 @@ def viewAnimals(): #[2]
             print(f"Currently unavalible animals are {unavalibleAnimals}")
 
 def createAdmin(remove): #[5]
-    if remove == False:
+    if remove:
         with open(fileZoo, "r", encoding="utf-8") as file:
             data = jason.load(file)
         pass
