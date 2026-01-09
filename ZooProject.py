@@ -172,7 +172,6 @@ def createAdmin(remove): #[5]
     if remove:
         with open(fileZoo, "r", encoding="utf-8") as file:
             data = jason.load(file)
-        pass
         try:
             adminUsername = input("Enter the username for the new account: ")
             if adminUsername in data.get("adminAccounts", {}) or adminUsername in data.get("accounts", {}):

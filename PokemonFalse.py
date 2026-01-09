@@ -125,6 +125,7 @@ def LevelScaling(CharacterSelected):
     print(f"[ Your new max HP is {CharacterSelected.Health} and you damage is boosted by {CharacterSelected.AttackBoost}! 1]")
 
 def YourAttack(CharacterSelected):
+    print(f"Currently, you have {CharacterSelected.Stamina}")
     #check what moves are usable (player needs enough stamina for it)
     # ai MIGHT of been used for the avalible moves but who knows....
     AvalibleMoves = [
@@ -427,7 +428,7 @@ GameLoop(CharacterSelected)
 #players hp isnt getting correctly set sometimes during the first turn of a battle? - fixed
 
 #TO DO
-#Stamina to moves - DONE SHOULD FULLY WORK ON ALL APART FROM MITLERT (NEVER MIND I FORGOT THE ENTIRE FUNCTIONALITY OF REMOVING STAMINA AFTER USING A MOVE?? HOW DO I MISS THAT)
+#Fix stamina to work with mitlert
 #new affects from moves
 #move "speeds" whoever uses the move with the highest speed has a chance to attack before the player
 #more characters with new elements

@@ -15,7 +15,7 @@ while True:
         print(f"You made {Profit} ")
 
     Retry = input("Do you want to restart - Y/N").upper()
-    if Retry == Y:
+    if Retry == "Y":
         continue
     else:
         break

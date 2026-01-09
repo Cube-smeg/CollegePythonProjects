@@ -1,28 +1,28 @@
 #Presence Check   
-def Required(FieldName)
+def Required(FieldName):
     if len(FieldName) > 0:
         print("This field is required, ensure you enter your name.")
     else:
         print("Field Answered")
 
-while True
+while True:
     Age = (input("* Enter your age: "))
     Required(Age)
-    else:
-        print("Age Entered")
-        break()
+    print("Age Entered")
+    break
 
-while True
+while True:
     FirstName = (input("* Enter your first name: "))
     Required(FirstName)
-    else:
-        print(f"Firstname: {FirstName}")
-    
+    print(f"Firstname: {FirstName}")
+    break
+
 #Length Checks
 MyList = []
-While DesiredLength == False
+DesiredLength = False
+while DesiredLength == False:
     DesiredLengthOfList = 3
-    if len(List) < DesiredLengthOfList:
+    if len(MyList) < DesiredLengthOfList:
         NewElement = input("Your list is not long enough, enter a new element.")
         MyList.append(NewElement)
     else:

@@ -15,7 +15,7 @@ def movebackward():
 
 forward(90)
 
-onkeypress(moveright, "d")
-onkeypress(moveleft, "a")
-onkeypress(moveforward, "w")
-onkeypress(movebackward, "s")
+onkeypress(moveright(), "d")
+onkeypress(moveleft(), "a")
+onkeypress(moveforward(), "w")
+onkeypress(movebackward(), "s")
