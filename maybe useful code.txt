@@ -1,0 +1,10 @@
+if player_character.perception >= perception_moves["see_through_world"["requirement"]]:
+        player_character.Moves.append("see_through_world")
+    #speed moves
+    elif player_character.speed >= speed_moves["lunge"]["requirement"]:
+        player_character.Moves.append("lunge")
+    #power moves
+    elif player_character.power >= power_moves["gut_punch"]["requirement"]:
+        player_character.Moves.append("gut_punch")
+    elif player_character.power >= power_moves["dropping_spike"]["requirement"]:
+        player_character.Moves.append("dropping_spike")

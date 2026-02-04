@@ -1,0 +1,75 @@
+[
+
+    {
+        
+    "accounts": {
+        "username": "password",
+        "cube": "newaccount"
+    },
+    "adminAccounts": {
+        "admin": "admin123",
+        "adminaccount": "adminpassword"
+    }
+
+
+  },
+  {
+
+
+
+  },  
+  {
+    "FeministLiterature": {
+      "Author": "Siphy",
+      "Releasedate": "12/12/1928"
+    }
+  },
+  {
+    "A Chud Named Smeg's Life": {
+      "Author": "Mitler",
+      "Releasedate": "11/09/2009"
+    }
+  },
+  {
+    "Green Giant": {
+      "Author": "Dylan",
+      "Releasedate": "07/11/2010"
+    }
+  },
+  {
+    "Jac": {
+      "Author": "Smeg",
+      "Releasedate": "10/10/2001"
+    }
+  },
+  {
+    "Tarting About": {
+      "Author": "Ramone",
+      "Releasedate": "05/05/1900"
+    }
+  },
+  {
+    "Diary Of Anne Frank": {
+      "Author": "Anne Frank",
+      "Releasedate": "11/11/1950"
+    }
+  },
+  {
+    "The great lock in": {
+      "Author": "Ramone Holme-Slater",
+      "Releasedate": "28/11/2007"
+    }
+  },
+  {
+    "Story of the overthinking hooper": {
+      "Author": "Kade",
+      "Releasedate": "10/09/2003"
+    }
+  },
+  {
+    "She was seventeen Dale": {
+      "Author": "Dale",
+      "Releasedate": "12/12/1987"
+    }
+  }
+]

@@ -1,0 +1,17 @@
+import pandas as pd 
+
+data = {"Name": [], "Age": []}
+while True: 
+    personName = input("Enter your name")
+    personAge = int(input("Enter your age"))
+
+    data["Name"].append(personName)
+    data["Age"].append(personAge)
+    end = int(input("Enter 1 to exit"))
+    if end == 1:
+        break
+df = pd.DataFrame.from_dict(data)
+print(df)
+
+fileName = input("Enter the name of the csv file")
+csvdata = pd.read_csv(fileName)
