@@ -563,7 +563,27 @@ def RoomOneIntro():
     return player_character
 
 def SceneTwo(player_character):
-
+    print(f'''{player_character.name}... {player_character.name}!- Your eyes open, the suns glare temporarily blinds you 
+          
+          "Where am i..."
+          {time.sleep(0.5)} Your eyes clear, growing accustom to the suns blinding glow.
+          "You passed out just before you were about to enter the cave"
+          "My names Syph, whats yours? ''')
+    
+    try:
+        player_reply = int(input(f'''
+        [1] - Call me {player_character.name} if you like. and thank you for helping me
+        [2] - My name is {player_character.name} where did the others go..?
+        '''))
+        
+        if player_reply == 1:
+            print(f'''"No problem!, always happy to help a fellow traveller in need."
+                "But hey, your friend steve left me with you to go and venture in the cave alone, how about we go down and support him? "''')
+            player_character.syph_character_apriciation += 50
+        elif player_character == 2:
+            print(f'''"Oh, you mean steve?, he left me with you to go and venture in the cave alone, how about we go down and support him? "''')
+    except:
+        print("Invalid input.")
     pass 
 
 #running program
