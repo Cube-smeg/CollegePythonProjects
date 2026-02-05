@@ -348,7 +348,7 @@ def check_inventory(player_character):
                 player_character.inventory.append(given_rewards)
                 print(f"Item Found!: {given_rewards}")
         elif results > 15:
-            for x in range(1,5):
+            for x in range(1,5): 
                 given_rewards = random.choice(possible_rewards)
                 player_character.inventory.append(given_rewards)
                 print(f"Item Found!: {given_rewards}")
@@ -584,7 +584,21 @@ def SceneTwo(player_character):
             print(f'''"Oh, you mean steve?, he left me with you to go and venture in the cave alone, how about we go down and support him? "''')
     except:
         print("Invalid input.")
+
+        #player continues into cave
+        #set up combat system using the new move class
     pass 
+
+
+
+
+
+
+
+
+
+
+
 
 #running program
 player_character = RoomOneIntro()
