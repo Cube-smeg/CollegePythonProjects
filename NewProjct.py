@@ -585,10 +585,54 @@ def SceneTwo(player_character):
     except:
         print("Invalid input.")
 
+    print(f''' 
+          *Slowly, you walk down the dimly lit carved out path through the cave,
+           "How deep does this place go...." 
+           Syph turns to reply to you- "I dont know.. this feels much deeper then usual."
+         
+           You turn a corner and see two ajacent paths, what do you do.. ''')
+    
+    try:
+        player_action = int(input(''' 
+            [1] - Go left, and split up with syphy
+            [2] - Go right, and split up with syhpy
+            [3] - Let syphy chose for the both of you.'''))
+
+        if player_action == 1:
+            route = "left"
+            player_character.syphy_character_apriciation -= 10
+        elif player_action == 2:
+            route = "right"
+            player_character.syphy_character_apriciation -= 10
+        elif player_action == 3:
+            choices = ["right", "left"]
+            route = random.choice(choices)
+            print(f"Syphy has decided, you will both go {route}.")
+            print("Syphy thanks you for allowing him to choose. [Action will be remembered.]")
+            player_character.syphy_character_apriciation += 15
+    except:
+        print("invalid input")
+
+    if route == "right":
+        SceneTwoRight(player_character)
+    elif route == "left":
+        SceneTwoLeft(player_character) 
+
         #player continues into cave
         #set up combat system using the new move class
+
+        #set up 2 different scenes one for going right, one for going left
+        #Left side = very easy fight with minimal rewards
+        #Right side = kinda hard fight with large rewards
+
     pass 
 
+#currently a logic error, needs to be moved above where the function is called :)
+def SceneTwoRight(player_character):
+    pass
+
+def SceneTwoLeft(player_character):
+    pass
 
 
 
