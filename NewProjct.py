@@ -2,6 +2,7 @@
 #Text based adv game
 #Characters - Mitler, Smeg, Kade, Syph, Luke, Muko, Steve, Aurafarmer, WeSeeTheFit, ResidentHomo
 
+#Hours spent: 5
 import time
 import random
 
@@ -31,7 +32,7 @@ class Characters:
         self.speed = Speed
         self.critChance = Perception
         self.power = Power
-        self.Moves = []
+        self.moves = []
         #player inv
         self.inventory = []
         #stats
@@ -40,6 +41,7 @@ class Characters:
         self.Defence = 1
         self.CritBoost = 1.5
         self.Stamina = 100 
+        self.lives = 3 #on each death deduct 1, add an item that rewards a life, once all lifes are lost the character is deleted and they must restart
         #likeness
         self.characters_met = [] #AFTER EACH SCENE YOU MUST PLACE ALL NEW CHARACTERS INSIDE 
         self.syph_character_apriciation = 0
@@ -146,13 +148,14 @@ def unlockable_moves(player_character):
         ]
     }
 
+    #this took like 9 years to figure out ngl
     for stat, moves in moves_by_stat.items():
         player_value = getattr(player_character, stat)
 
         for move in moves:
             if player_value >= move.requirement:
-                if move.name not in [m.name for m in player_character.Moves]:
-                    player_character.Moves.append(move)
+                if move.name not in [m.name for m in player_character.moves]:
+                    player_character.moves.append(move)
 
 
     
@@ -277,7 +280,7 @@ Each componant will have its own unique properties, for example; LegSweep, this 
     components_used = []
 
     while len(components_used) < components_amount:
-        print("\nAvailable components:")
+        print("Available components:")
         for name in possible_components:
             print("-", name)
 
@@ -322,7 +325,7 @@ Each componant will have its own unique properties, for example; LegSweep, this 
     final_move.damage_mult *= nerf
     final_move.defence_mult *= nerf
 
-    player_character.Moves.append(final_move)
+    player_character.moves.append(final_move)
 
     print(f"New move created: {final_move.name}")
     
@@ -496,6 +499,40 @@ def check_character_apriciation(player_character):
         
         print(f"{character_to_find} apriciation meter for you is at {character_to_apriciation_checker[character_to_find]}")
 
+
+#univeral battle creator
+def BattleStart(enemy_character, player_character): #ENEMY CHARCTER MUST BE INITIALISED BEFORE ENTERING THE FUNCTION
+
+    print("A Battle begins.")
+    while player_character.Health > 0 or enemy_character.Health > 0: #loops until one character has reached 0 hp (maybe change?)
+        try:
+            player_action = int(input('''Chose your action!
+                                    [1] - Attack!
+                                    [2] - Use an item!
+                                    [3] - Run away (pussy)'''))
+            if player_action == 1:
+                #ensure player has access to a move
+                if len(player_character.moves) < 1:
+                    #create base move 
+                    player_character.moves.append(Move("Tackle", requirement=0, damage=10, stamina_cost=1))
+                move_selection = int(input(''' Select your move! 
+                                            Select from the position of your move: 
+                                        {player_character.moves}''' ))
+                #check moves index position, use the input to find which move
+                print(f"you have selected {player_character.moves[move_selection]}")
+                player_uses = player_character.moves[move_selection]
+        except:
+            print("Invalid input")
+        #move has been found, time to find the enemys move (kinda hard bc i dont have moves for each so im gonna assign stats to each enemy that is fought and they can get the base moves from that)
+        
+
+        #now the enemy move has been found we enter the damage dealing phase
+
+        #Check both hps, if one has reached 0 give the victor screen, if the player loses they lose a life (players have a max of 3 lifes before they are wiped and data is deleted)
+
+        #Finally, hand out rewards, exp, potential item drops aswell as an option to invest skill points(maybe not)
+        pass
+
 def RoomOneIntro():
     print('''
     You wake up still groggy, your head is banging against your skull, coming towards you, slowly, rolling, someone approches..
@@ -627,7 +664,7 @@ def SceneTwo(player_character):
 
     pass 
 
-#currently a logic error, needs to be moved above where the function is called :)
+#currently a error, needs to be moved above where the function is called :)
 def SceneTwoRight(player_character):
     pass
 
@@ -642,7 +679,7 @@ def SceneTwoLeft(player_character):
 
 
 
-
+#CURRENTLY WORKING ON LINE 500- "UNIVERAL BATTLE CREATOR" 
 
 #running program
 player_character = RoomOneIntro()
