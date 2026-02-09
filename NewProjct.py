@@ -2,16 +2,15 @@
 #Text based adv game
 #Characters - Mitler, Smeg, Kade, Syph, Luke, Muko, Steve, Aurafarmer, WeSeeTheFit, ResidentHomo
 
-#Hours spent: 5
+#Hours spent: 6
 import time
 import random
 
 class Move:
-    def __init__(self, name, requirement=0, stamina_cost=0, damage=0, **attributes):
+    def __init__(self, name, requirement=0, stamina_cost=0,  **attributes):
         self.name = name
         self.requirement = requirement
         self.stamina_cost = stamina_cost
-        self.damage = damage
 
         self.damage_mult = 1.0
         self.move_stun = 0
@@ -74,13 +73,14 @@ class Characters:
         def UpdateExpReq(self): 
             self.ExpReq = int(self.BaseExp * self.Mult * (self.Level - 1))
 
-        def ScaleCharacter(self): 
-            self.Health = 100
-            if self.Level > 1: # if this isnt here it sets both of them to 0 from the calculation
-                self.Health = self.Health * 1.08 * (self.Level - 1)
-                self.AttackBoost = self.AttackBoost * 1.05 * (self.Level - 1)
-                self.Stamina = self.Stamina * 1.2 * (self.Level - 1) #large scale amount
-        
+        def ScaleCharacter(self):
+            self.Health = self.GetMaxHealth()
+            self.AttackBoost = 1 * (1.05 ** (self.Level - 1))
+            self.Stamina = int(100 * (1.2 ** (self.Level - 1)))
+    
+        def GetMaxHealth(self):
+            return int(100 * (1.08 ** (self.Level - 1)))
+
 def spend_skill_points(player_character):
     print(f''' 
     Current Skill Point Investments:
@@ -135,12 +135,12 @@ def unlockable_moves(player_character):
 
     moves_by_stat = {
         "power": [
-            Move("Power Slam", requirement=10, damage=25, stamina_cost=20),
-            Move("Gut Punch", requirement=5, damage=12, stamina_cost=10)
+            Move("Power Slam", requirement=10, stamina_cost=20),
+            Move("Gut Punch", requirement=5, stamina_cost=10)
         ],
 
         "speed": [
-            Move("Quick Lunge", requirement=6, damage=15, stamina_cost=12)
+            Move("Quick Lunge", requirement=6, stamina_cost=12)
         ],
 
         "perception": [
@@ -501,10 +501,10 @@ def check_character_apriciation(player_character):
 
 
 #univeral battle creator
-def BattleStart(enemy_character, player_character): #ENEMY CHARCTER MUST BE INITIALISED BEFORE ENTERING THE FUNCTION
+def BattleStart(enemy_character, player_character, potential_rewards, rewards_amount): #ENEMY CHARCTER MUST BE INITIALISED BEFORE ENTERING THE FUNCTION
 
     print("A Battle begins.")
-    while player_character.Health > 0 or enemy_character.Health > 0: #loops until one character has reached 0 hp (maybe change?)
+    while battle_over == False: #loops until one character has reached 0 hp (maybe change?)
         try:
             player_action = int(input('''Chose your action!
                                     [1] - Attack!
@@ -524,13 +524,64 @@ def BattleStart(enemy_character, player_character): #ENEMY CHARCTER MUST BE INIT
         except:
             print("Invalid input")
         #move has been found, time to find the enemys move (kinda hard bc i dont have moves for each so im gonna assign stats to each enemy that is fought and they can get the base moves from that)
+        if len(enemy_character.moves) < 1:
+            enemy_character.power += 5
+            enemy_character.speed += 5
+            enemy_character.perception += 5
+            unlockable_moves(enemy_character)
+            if len(enemy_character) < 1:
+                possible_moves.append(Move("Tackle", requirement=0, damage=10, stamina_cost=1))
         
 
-        #now the enemy move has been found we enter the damage dealing phase
+        possible_moves = list(enemy_character.moves)
+        enemy_choses = random.choice(possible_moves)
+
+        #now the enemy move is found we find out who goes first
+        #find who gets the first move (use speed, if one has more they got first, if its the same then  it will be a coin flip)
+        who_goes_first = ["player", "enemy"]
+        if player_character.speed > enemy_character.speed:
+            goes_first = "player"
+        elif player_character.speed == enemy_character.speed:
+            goes_first = random.choice(who_goes_first)
+        else:
+            goes_first = "enemy"
+        
+        #first player has been found, now we enter the damage dealing phase
+        while goes_first == "player":
+            print("Your move.")
+            battle_over = False
+            if move_stun == 1:
+                goes_first = "enemy"
+            #find total damage
+            player_damage = player_character.power * 2
+            damage_mult = player_uses["damage_mult"]
+            total_hit = player_uses["multi_hit"]
+            move_stun = player_uses["move_stun"]
+            total_bleed = player_uses["bleed_damage"]
+            total_move_damage = player_damage * damage_mult + total_bleed * total_hit # if built correctly, moves can do insane damage
+
+            #find enemys max hp to use for the damage cap
+            enemy_max_health = enemy_character.get_max_health()
+            damage_percentage_to_enemy_health = total_move_damage / enemy_max_health * 100
+            if damage_percentage_to_enemy_health >= 25:
+                enemy_character.health = enemy_character.health - enemy_character*0.75 #adding a damage cap of 25% of the enemys health in 1 move
+            else:
+                enemy_character.health = enemy_character.health - total_move_damage
 
         #Check both hps, if one has reached 0 give the victor screen, if the player loses they lose a life (players have a max of 3 lifes before they are wiped and data is deleted)
-
-        #Finally, hand out rewards, exp, potential item drops aswell as an option to invest skill points(maybe not)
+        if enemy_character.health < 1:
+            print(f'''                                  -----YOU HAVE WON!-----
+                        {enemy_character.name} has beem defeated by the mighty {player_character.name}
+                        as he falls his body disintergrates and left just where it was treasures lay, waiting for the taking''')
+            for x in range(1,rewards_amount):
+                item_found = random.choice(potential_rewards)
+                take_item = str(input(f"Do you want to take {item_found}? Y/N ")).upper()
+                if take_item == "Y":
+                    player_character.inventory.append(item_found)
+                
+            
+        move_stun =- 1
+        #Finally, hand out rewards, exp, potential item drops aswell as an option to invest skill points(maybeWW not)
         pass
 
 def RoomOneIntro():
@@ -664,7 +715,7 @@ def SceneTwo(player_character):
 
     pass 
 
-#currently a error, needs to be moved above where the function is called :)
+#currently a error, needs to be moved above where the fusnction is called :)
 def SceneTwoRight(player_character):
     pass
 
@@ -679,7 +730,7 @@ def SceneTwoLeft(player_character):
 
 
 
-#CURRENTLY WORKING ON LINE 500- "UNIVERAL BATTLE CREATOR" 
+#CURRENTLY WORKING ON LINE 580- "UNIVERAL BATTLE CREATOR" 
 
 #running program
 player_character = RoomOneIntro()

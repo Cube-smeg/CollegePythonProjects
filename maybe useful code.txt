@@ -8,3 +8,26 @@ if player_character.perception >= perception_moves["see_through_world"["requirem
         player_character.Moves.append("gut_punch")
     elif player_character.power >= power_moves["dropping_spike"]["requirement"]:
         player_character.Moves.append("dropping_spike")
+        
+
+
+
+class Move:
+    def __init__(self, name, requirement=0, stamina_cost=0, damage=0, **attributes):
+        self.name = name
+        self.requirement = requirement
+        self.stamina_cost = stamina_cost
+        self.damage = damage
+
+        self.damage_mult = 1.0
+        self.move_stun = 0
+        self.bleed_damage = 0
+        self.self_stun_chance = 0.0
+        self.multi_hit = 1
+        self.defence_mult = 1.0
+        self.stun_reduc_chance = 0.0
+        self.dodge_chance_mult = 1.0
+        self.stun_chance_reduc = 0.0
+
+        for key, value in attributes.items():
+            setattr(self, key, value)
