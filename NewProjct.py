@@ -35,7 +35,7 @@ class Characters:
         #player inv
         self.inventory = []
         #stats
-        self.Health = 100
+        self.health = 100
         self.AttackBoost = 1
         self.Defence = 1
         self.CritBoost = 1.5
@@ -54,12 +54,12 @@ class Characters:
         self.resident_homo_character_apriciation = 0
         self.blacksmith_character_apriciation = 0
         #level handling
-        self.Level = 1
+        self.level = 1
         self.BaseExp = 100
         self.Mult = 1.25
         self.ExpBoost = 1
         self.Exp = 0
-        self.ExpReq = self.BaseExp * self.Mult * (self.Level - 1) # works as 0 exp for the first level to garuntee a level up
+        self.ExpReq = self.BaseExp * self.Mult * (self.level - 1) # works as 0 exp for the first level to garuntee a level up
         #skill point stuff
         self.unspent = 0
         self.spent = 0
@@ -70,15 +70,15 @@ class Characters:
             self.exp = 0
             
         def UpdateExpReq(self): 
-            self.ExpReq = int(self.BaseExp * self.Mult * (self.Level - 1))
+            self.ExpReq = int(self.BaseExp * self.Mult * (self.level - 1))
 
         def ScaleCharacter(self):
-            self.Health = self.GetMaxHealth()
-            self.AttackBoost = 1 * (1.05 ** (self.Level - 1))
-            self.Stamina = int(100 * (1.2 ** (self.Level - 1)))
+            self.health = self.GetMaxhealth()
+            self.AttackBoost = 1 * (1.05 ** (self.level - 1))
+            self.Stamina = int(100 * (1.2 ** (self.level - 1)))
     
-        def GetMaxHealth(self):
-            return int(100 * (1.08 ** (self.Level - 1)))
+        def GetMaxhealth(self):
+            return int(100 * (1.08 ** (self.level - 1)))
         
         def PlayerDied(self):
             #lose a life and empty your inventory
@@ -348,7 +348,7 @@ def check_inventory(player_character):
         print("My inventory seems empty... no matter ill go foraging for some supplys.")
         results = mini_game()
         print(f"results - {results}")
-        possible_rewards = ["Mixed Berry", "LevelUp Crystal", "ExpUp Crystal","Sword of Doom","HealthUp Crystal", "RandomComponant Crystal","PowerfulComponant Crystal"]
+        possible_rewards = ["Mixed Berry", "LevelUp Crystal", "ExpUp Crystal","Sword of Doom","healthUp Crystal", "RandomComponant Crystal","PowerfulComponant Crystal"]
 
         if results > 10:
             for x in range(1,3):
@@ -394,8 +394,10 @@ def check_inventory(player_character):
                 item = player_character.inventory[index]
 
                 if action == "u":
+                    print(f"Using Item: {item}")
                     use_item(player_character, item)
                     player_character.inventory.pop(index)
+                    print("")
                 elif action == "d":
                     player_character.inventory.pop(index)
                     print(f"You dropped {item}.")
@@ -443,9 +445,14 @@ def use_random_component_crystal(player_character):
     "Stance": {"defence_mult": 1.2, "stun_reduc_chance": 0.7},
     "PerfectEyesight": {"dodge_chance_mult": 1.3, "stun_chance_reduc": 0.9}
 }
-    random_componant = random.choice(possible_componants)
-    player_character.inventory.append(random_componant)
-    print(f"You used a random componant crystal and found {random_componant}! Congrats")
+    component_name = random.choice(list(possible_componants.keys()))
+    component_data = possible_componants[component_name]
+
+    player_character.inventory.append({
+    "name": component_name,
+    "stats": component_data
+    })
+    print(f"You used a random componant crystal and found {component_name}! Congrats")
     
 
 def use_powerful_component_crystal(player_character):
@@ -462,26 +469,26 @@ def use_powerful_component_crystal(player_character):
     player_character.inventory.append(random_componant)
 
 def use_item(player_character, item_used):
-    possible_items = ["Mixed Berry", "LevelUp Crystal", "ExpUp Crystal","Sword of Doom","HealthUp Crystal", "RandomComponant Crystal","PowerfulComponant Crystal"]
+    possible_items = ["Mixed Berry", "LevelUp Crystal", "ExpUp Crystal","Sword of Doom","healthUp Crystal", "RandomComponant Crystal","PowerfulComponant Crystal"]
     if item_used in possible_items:
-        #use item logic
+        print(f"item found: {item_used}")
+
         item_actions = {
-    "Mixed Berry": use_mixed_berry(player_character),
-    "LevelUp Crystal": use_levelup_crystal(player_character),
-    "ExpUp Crystal": use_expup_crystal(player_character),
-    "Sword of Doom": use_sword_of_doom(player_character),
-    "HealthUp Crystal": use_healthup_crystal(player_character),
-    "RandomComponant Crystal": use_random_component_crystal(player_character),
-    "PowerfulComponant Crystal": use_powerful_component_crystal(player_character)
-    }
+            "Mixed Berry": use_mixed_berry,
+            "LevelUp Crystal": use_levelup_crystal,
+            "ExpUp Crystal": use_expup_crystal,
+            "Sword of Doom": use_sword_of_doom,
+            "healthUp Crystal": use_healthup_crystal,
+            "RandomComponant Crystal": use_random_component_crystal,
+            "PowerfulComponant Crystal": use_powerful_component_crystal
+        }
 
-    action = item_actions.get(item_used)
+        action = item_actions.get(item_used)
 
-    if action:
-        action()
-    else:
-        print("This item can't be used.")
-        pass
+        if action:
+            action(player_character)  
+        else:
+            print("This item can't be used.")
     
 
 def check_character_apriciation(player_character):
@@ -651,11 +658,16 @@ def RoomOneIntro():
         get_player_power = int(input(f"oooh, interesting! how about this- How POWERFUL are you? (0-10) : [YOU HAVE {player_stat_points} STAT POINTS TO SPEND.]: "))
         if get_player_power > player_stat_points:
             print("Ensure you only spend stat points you have.")
+            player_stat_points = player_stat_points - get_player_speed
             continue
+        player_stat_points = player_stat_points - get_player_power
+        
         get_player_perception = int(input(f"wow!, you surprise me.. one last thing.. How perceptive are you...? (0-10) : [YOU HAVE {player_stat_points} STAT POINTS TO SPEND.]: "))
         if get_player_perception > player_stat_points:
-            print("Ensure you only spend stat points you have.")
+            print("Ensure you only spend stat points you have.")#
             continue
+        player_stat_points = player_stat_points - get_player_perception
+        
         if player_stat_points == 0:
             stat_points_unspent = False
 
