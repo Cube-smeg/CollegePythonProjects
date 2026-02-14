@@ -465,8 +465,15 @@ def use_powerful_component_crystal(player_character):
     "Stance": {"defence_mult": 1.2, "stun_reduc_chance": 0.7},
     "PerfectEyesight": {"dodge_chance_mult": 1.3, "stun_chance_reduc": 0.9}
 }
-    random_componant = random.choice(possible_componants)
-    player_character.inventory.append(random_componant)
+    component_name = random.choice(list(possible_componants.keys()))
+    component_data = possible_componants[component_name]
+
+    player_character.inventory.append({
+    "name": component_name,
+    "stats": component_data
+    })
+    
+    print(f"You used a random componant crystal and found {component_name}! Congrats")
 
 def use_item(player_character, item_used):
     possible_items = ["Mixed Berry", "LevelUp Crystal", "ExpUp Crystal","Sword of Doom","healthUp Crystal", "RandomComponant Crystal","PowerfulComponant Crystal"]
