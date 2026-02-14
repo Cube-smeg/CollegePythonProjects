@@ -2,7 +2,7 @@
 #Text based adv game
 #Characters - Mitler, Smeg, Kade, Syph, Luke, Muko, Steve, Aurafarmer, WeSeeTheFit, ResidentHomo
 
-#Hours spent: 6
+#Hours spent: 6.5
 import time
 import random
 
@@ -68,8 +68,7 @@ class Characters:
             self.unspent = self.unspent + 2 #2 sp per level up
             self.level = self.level + 1
             self.exp = 0
-            pass
-
+            
         def UpdateExpReq(self): 
             self.ExpReq = int(self.BaseExp * self.Mult * (self.Level - 1))
 
@@ -80,6 +79,12 @@ class Characters:
     
         def GetMaxHealth(self):
             return int(100 * (1.08 ** (self.Level - 1)))
+        
+        def PlayerDied(self):
+            #lose a life and empty your inventory
+            self.lifes =- 1
+            self.inventory = []
+
 
 def spend_skill_points(player_character):
     print(f''' 
@@ -545,12 +550,43 @@ def BattleStart(enemy_character, player_character, potential_rewards, rewards_am
             goes_first = random.choice(who_goes_first)
         else:
             goes_first = "enemy"
-        
+
+        #battle logic:
+        while goes_first == "enemy":
+            print("The enemy attacks.")
+            battle_over = False
+            if move_stun == 1:
+                move_stun =- 1
+                goes_first = "player"
+            #find enemys total damage
+            enemy_damage = enemy_character.power * 2
+            damage_mult = enemy_choses["damage_mult"]
+            total_hit = enemy_choses["multi_hit"]
+            move_stun = enemy_choses["move_stun"]
+            total_bleed = enemy_choses["bleed_damage"]
+            total_move_damage = enemy_damage * damage_mult + total_bleed * total_hit
+
+            #adding damage cap
+            player_max_health = player_character.get_max_health()
+            damage_percentage_to_player_health = total_move_damage / player_max_health * 100
+            if damage_percentage_to_player_health >= 25:
+                player_character.health = player_character.health - player_character.health*0.75 #adding a damage cap of 25% of the enemys health in 1 move
+            else:
+                player_character.health = player_character.health - total_move_damage
+            if player_character.health < 1:
+                player_character.PlayerDied()
+                print(f'''                                  -----YOU HAVE DIED!-----
+                        {player_character.name} has been nobily defeated by the mighty {enemy_character.name}
+                        as you fall you see something.. angelic, slowly decending towards you.. you hear a whisper, unsure as to
+                        where it came from.. "One life down little one." - {player_character.lifes} lifes remain...''')
+                battle_over = True
+            
         #first player has been found, now we enter the damage dealing phase
         while goes_first == "player":
             print("Your move.")
             battle_over = False
             if move_stun == 1:
+                move_stun =- 1
                 goes_first = "enemy"
             #find total damage
             player_damage = player_character.power * 2
@@ -564,25 +600,30 @@ def BattleStart(enemy_character, player_character, potential_rewards, rewards_am
             enemy_max_health = enemy_character.get_max_health()
             damage_percentage_to_enemy_health = total_move_damage / enemy_max_health * 100
             if damage_percentage_to_enemy_health >= 25:
-                enemy_character.health = enemy_character.health - enemy_character*0.75 #adding a damage cap of 25% of the enemys health in 1 move
+                enemy_character.health = enemy_character.health - enemy_character.health*0.75 #adding a damage cap of 25% of the enemys health in 1 move
             else:
                 enemy_character.health = enemy_character.health - total_move_damage
 
         #Check both hps, if one has reached 0 give the victor screen, if the player loses they lose a life (players have a max of 3 lifes before they are wiped and data is deleted)
         if enemy_character.health < 1:
             print(f'''                                  -----YOU HAVE WON!-----
-                        {enemy_character.name} has beem defeated by the mighty {player_character.name}
+                        {enemy_character.name} has been defeated by the mighty {player_character.name}
                         as he falls his body disintergrates and left just where it was treasures lay, waiting for the taking''')
-            for x in range(1,rewards_amount):
+            battle_over = True
+
+        #Finally, hand out rewards, exp, potential item drops aswell as an option to invest skill points(maybeWW not)
+        
+def battle_won_rewards(rewards_amount, potential_rewards, enemy_character, player_character):
+    for x in range(1,rewards_amount):
                 item_found = random.choice(potential_rewards)
                 take_item = str(input(f"Do you want to take {item_found}? Y/N ")).upper()
                 if take_item == "Y":
                     player_character.inventory.append(item_found)
-                
-            
-        move_stun =- 1
-        #Finally, hand out rewards, exp, potential item drops aswell as an option to invest skill points(maybeWW not)
-        pass
+    exp_to_award = 100 * enemy_character.level / 1.3
+    if exp_to_award > player_character.ExpReq:
+        player_character.levelup()
+        player_character.UpdateExpReq()
+        player_character.ScaleCharacter()
 
 def RoomOneIntro():
     print('''
@@ -730,7 +771,7 @@ def SceneTwoLeft(player_character):
 
 
 
-#CURRENTLY WORKING ON LINE 580- "UNIVERAL BATTLE CREATOR" 
+#CURRENTLY WORKING ON new scenes
 
 #running program
 player_character = RoomOneIntro()
