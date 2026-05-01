@@ -74,7 +74,7 @@ while True:
         if UserLeave == "E":    
             break
     elif whatToDo == 3:
-        operation = (input(f"Your current balance is: {currentBalance} What would you like to do?: Add | Subtract | Rewrite")).capitalize()
+        operation = (input(f"Your current balance is: {currentBalance} What would you like to do?: Add | Subtract")).capitalize()
         if operation == "Rewrite":
             currentBalance = int(input("What do you want to change your balance to?"))
             ChangeValue(fileName, "CurrentBalance", currentBalance)
